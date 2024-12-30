@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime, timedelta
-from imaplib import IMAP4
+from time import sleep
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -215,7 +215,7 @@ def insert_data(table_name: str) -> None:
 
         df = pd.read_csv(file_path, encoding=encoding, delimiter=';')
         logger.info(f"Успешно прочитан файл{table_name}")
-
+        sleep(5)
         logger.info(f'Опеределены столбцы в фрейме: {df.columns}')
         df = process_data(df, table_name)
         logger.info(f'Успешно проведена валидация, трансформация, приведение типов и удаление дубликатов')
@@ -224,6 +224,7 @@ def insert_data(table_name: str) -> None:
         deduplication_keys = TABLE_PROCESSING_RULES[table_name]["deduplication_keys"]
         logger.info(f'Опеределены ключевые столбы для дедупликации: {deduplication_keys}')
         postgres_hook = PostgresHook("postgres-db")
+
         engine = postgres_hook.get_sqlalchemy_engine()
         logger.info('Успешно создали движок для коннекта к БД')
         temp_table_name = f"temp_{table_name}"
