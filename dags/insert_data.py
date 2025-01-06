@@ -114,22 +114,22 @@ TABLE_PROCESSING_RULES = {
         "transformations": [], #Список функций для трансформации данных
         "validations": [], #Список функция для валидации
         "type_casting": { #Приведение типов
-            "ON_DATE": "date"}
-    },
+            "ON_DATE": {"type": "date", "format": "%d.%m.%Y"},
+    }},
     "ft_posting_f": {
         "deduplication_keys": [],
         "transformations": [],
         "validations": [],
         "type_casting": {
-            "OPER_DATE": "date"}
+            "OPER_DATE": {"type": "date", "format": "%d-%m-%Y"}}
     },
     "md_account_d": {
         "deduplication_keys": ['DATA_ACTUAL_DATE', 'ACCOUNT_RK'],
         "transformations": [],
         "validations": [],
         "type_casting": {
-            "DATA_ACTUAL_DATE": "date",
-            "DATA_ACTUAL_END_DATE": "date"}
+            "DATA_ACTUAL_DATE": {"type": "date", "format": "%Y-%m-%d"},
+            "DATA_ACTUAL_END_DATE": {"type": "date", "format": "%Y-%m-%d"}}
     },
     "md_currency_d": {
         "deduplication_keys": ['CURRENCY_RK', 'DATA_ACTUAL_DATE'],
@@ -138,24 +138,24 @@ TABLE_PROCESSING_RULES = {
         ],
         "validations": [],
         "type_casting": {
-            "DATA_ACTUAL_DATE": "date",
-            "DATA_ACTUAL_END_DATE": "date"}
+            "DATA_ACTUAL_DATE": {"type": "date", "format": "%Y-%m-%d"},
+            "DATA_ACTUAL_END_DATE": {"type": "date", "format": "%Y-%m-%d"}}
     },
     "md_exchange_rate_d": {
         "deduplication_keys": ["DATA_ACTUAL_DATE", "CURRENCY_RK"],
         "transformations": [],
         "validations": [],
         "type_casting": {
-            "DATA_ACTUAL_DATE": "date",
-            "DATA_ACTUAL_END_DATE": "date"}
+            "DATA_ACTUAL_DATE": {"type": "date", "format": "%Y-%m-%d"},
+            "DATA_ACTUAL_END_DATE": {"type": "date", "format": "%Y-%m-%d"}}
     },
     "md_ledger_account_s": {
         "deduplication_keys": ["LEDGER_ACCOUNT", "START_DATE"],
         "transformations": [],
         "validations": [],
         "type_casting": {
-            "START_DATE": "date",
-            "END_DATE": "date"}
+            "START_DATE": {"type": "date", "format": "%Y-%m-%d"},
+            "END_DATE": {"type": "date", "format": "%Y-%m-%d"}}
     },
 
 }
@@ -181,14 +181,18 @@ def process_data(df: pd.DataFrame, table_name: str) -> pd.DataFrame:
             df = transform(df)
 
     type_casting = rules.get("type_casting", {})
-    for column, cast_type in type_casting.items(): #Меняем тип данных
+
+    for column, cast_rule in type_casting.items():
         if column in df.columns:
+            cast_type = cast_rule.get("type")
+            cast_format = cast_rule.get("format")
+
             if cast_type == "datetime":
-                df[column] = pd.to_datetime(df[column], errors='coerce')
+                df[column] = pd.to_datetime(df[column], format=cast_format, errors="coerce")
             elif cast_type == "date":
-                df[column] = pd.to_datetime(df[column], errors='coerce').dt.date
+                df[column] = pd.to_datetime(df[column], format=cast_format, errors="coerce").dt.date
             elif cast_type == "numeric":
-                df[column] = pd.to_numeric(df[column], errors='coerce')
+                df[column] = pd.to_numeric(df[column], errors="coerce")
             elif cast_type == "string":
                 df[column] = df[column].astype(str)
 
