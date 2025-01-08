@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION logs.log_process_event( --Функция для ло�
 ) RETURNS VOID
 LANGUAGE plpgsql
 AS $$
+
 BEGIN
     INSERT INTO logs.load_process_log (table_name, start_time, end_time, status, message, duration)
     VALUES (
@@ -35,7 +36,7 @@ BEGIN
     PERFORM logs.log_process_event(
         'dm_account_turnover_f',
         'STARTED',
-        'Процедура запущена',
+        format('Процедура fill_account_turnover_f за %s запущена',i_OnDate),
         v_start_time
     );
     BEGIN
@@ -116,7 +117,7 @@ BEGIN
         PERFORM logs.log_process_event(
             'dm_account_turnover_f',
             'COMPLETED',
-            'Процедура выполнена успешно',
+            format('Процедура fill_account_turnover_f за %s завершена',i_OnDate),
             v_start_time,
             v_end_time
         );

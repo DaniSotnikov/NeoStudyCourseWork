@@ -95,6 +95,18 @@ BEGIN
     -- Добавляем запись в таблицу логов об окончании расчета
 
     RAISE NOTICE 'Рассчитаны остатки за дату %', i_OnDate;
+	EXCEPTION
+	WHEN OTHERS THEN
+		-- Логгируем ошибку в случае её возникновения
+		v_end_time := clock_timestamp();
+		PERFORM logs.log_process_event(
+			'dm_account_balance_f',
+			'FAILED',
+			SQLERRM,
+			v_start_time,
+			v_end_time
+		);
+            RAISE;
 END;
 $$;
 
