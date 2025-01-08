@@ -1,3 +1,8 @@
-Ссылка на видео-демонстрацию https://drive.google.com/file/d/1KdevB0ZPmuhzecmJVc9xqVH_sctDKsYQ/view?usp=sharing
+Ссылка на видео-демонстрацию задача 1.1 https://drive.google.com/file/d/1KdevB0ZPmuhzecmJVc9xqVH_sctDKsYQ/view?usp=sharing
 
 P.S. на видео сложно записываться, поэтому иногда можно услышать мои зависания, извините) Спасибо!
+
+Ссылка на видео-демонстрацию задача 1.2
+https://drive.google.com/file/d/1Sn540nLjBqLsUmC_e6SUJpyJ27aaH_aa/view?usp=sharing
+
+P.S запись 11111 - тестовая, добавлял для отладки, в изначальных данных такой аккаунт отсутствует
