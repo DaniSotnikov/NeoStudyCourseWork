@@ -19,6 +19,9 @@ in (18007) -- сумма оборотов за весь период по руб
 SELECT sum(debet_amount_rub),sum(credit_amount_rub)FROM dm.dm_account_turnover_f where account_rk
 in (18007,18006,44195) -- сумма оборотов за весь период по всем
 
+SELECT * FROM ds.ft_posting_f where credit_account_rk in (18007,18006,44195) or debet_account_rk  in (18007,18006,44195) -- все проводки
+
+
 select * from dm.dm_account_balance_f where on_date = '2018-01-31' and account_rk in(18007) order by account_rk,on_date -- остатки на последний день по рублёвым
 
 select sum(balance_out),sum(balance_out_rub) from dm.dm_account_balance_f where on_date = '2018-01-31' and account_rk in(18006,44195) -- остатки на последний день по не рублёвым

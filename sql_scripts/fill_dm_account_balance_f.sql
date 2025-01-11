@@ -42,7 +42,7 @@ BEGIN
             a.char_type
         FROM DS.MD_ACCOUNT_D a
         WHERE a.data_actual_date <= i_OnDate
-          AND (a.data_actual_end_date > i_OnDate OR a.data_actual_end_date IS NULL)
+          AND (a.data_actual_end_date >= i_OnDate OR a.data_actual_end_date IS NULL)
     ),
     -- Производим расчет остатков
     calculated_balances AS (
