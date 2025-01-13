@@ -48,7 +48,7 @@ def log_process(table_name: str, status: str, message: str = '') -> tuple:
 
 
 def update_log(
-        log_id: str, status: str, message: str, start_time: datetime
+    log_id: str, status: str, message: str, start_time: datetime
 ) -> None:
     """
     Обновляет запись в логе после завершения процесса.
@@ -92,26 +92,35 @@ def import_f101_to_db() -> None:
         )
         dags_folder = os.path.dirname(os.path.abspath(__file__))
         logger.info(f'Определили путь папки dags {dags_folder}')
-        files_folder = os.path.join(
-            dags_folder, '..', 'files'
-        )
+        files_folder = os.path.join(dags_folder, '..', 'files')
         logger.info(f'Определили путь папки files {files_folder}')
         csv_file_path = os.path.join(files_folder, 'f101_round.csv')
         logger.info(
             f'Сгенерировали путь и название исходного csv {csv_file_path}'
         )
         df = pd.read_csv(csv_file_path, delimiter=';')
-        logger.info(f'Прочитали csv и создали df с колонками {df.columns}, количество записей {len(df)}')
+        logger.info(
+            f'Прочитали csv и создали df с колонками {df.columns}, количество записей {len(df)}'
+        )
         postgres_hook = PostgresHook('postgres-db')
         logger.info('Создали хук для коннекта к БД')
         engine = postgres_hook.get_sqlalchemy_engine()
         logger.info('Создали движок для работы с БД')
         with engine.connect() as connection:
             logger.info('Установлено соединение с БД')
-            df.to_sql('dm_f101_round_f_v2', connection, schema='dm', if_exists='replace', index=False)
+            df.to_sql(
+                'dm_f101_round_f_v2',
+                connection,
+                schema='dm',
+                if_exists='append',
+                index=False,
+            )
         logger.info('Успешно импортировали данные с файла в БД')
         update_log(
-            log_id, 'Success', 'Insert data from csv f101 completed', start_time
+            log_id,
+            'Success',
+            'Insert data from csv f101 completed',
+            start_time,
         )
     except SQLAlchemyError as e:
         logger.error(
@@ -130,12 +139,12 @@ def import_f101_to_db() -> None:
 
 
 with DAG(
-        'import_f101_to_db',
-        default_args=default_args,
-        description='import f101.csv to db from csv',
-        schedule_interval=None,
-        catchup=False,
+    'import_f101_to_db',
+    default_args=default_args,
+    description='import f101.csv to db from csv',
+    schedule_interval=None,
+    catchup=False,
 ) as dag:
     fetch_records_task = PythonOperator(
-        task_id='import_f101_to_bd', python_callable=import_f101_to_db
+        task_id='import_f101_to_db', python_callable=import_f101_to_db
     )
